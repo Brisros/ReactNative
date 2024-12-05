@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, Image, Pressable, Modal, StyleSheet, Button } from 'react-native';
+import PokeCard from './PokeCard';
 
 interface PokemonListProps {
   pokemonData: any[];
@@ -36,25 +37,23 @@ const PokemonList: React.FC<PokemonListProps> = ({ pokemonData, setSelectedPokem
           </Pressable>
         )}
       />
-      <Modal
-        animationType='slide'
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
+      {selectedPokemon && (
+        <Modal
+          animationType='slide'
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <PokeCard pokemonData={selectedPokemon} />
+              <Button title='Close' onPress={closeModal} />
+            </View>
 
-            <Text>Selected Pokemon name:</Text>
-            {selectedPokemon &&
-              (<Text>Selected Pokemon name: {selectedPokemon.name}</Text>)
-            }
-            <Button title='Close' onPress={closeModal} />
           </View>
 
-        </View>
-
-      </Modal>
+        </Modal>
+      )}
     </View>
   );
 };
