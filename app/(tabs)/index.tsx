@@ -1,56 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import store, { setPokemonData, AppDispatch, RootState, setSelectedPokemon } from '../../store';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import store, { setPokemonData, AppDispatch, RootState, setSelectedPokemon, incrementPage, setLoadingData, setHasError } from '../../store';
+import { View, StyleSheet, ScrollView, Text, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { fetchPokemonsDataList } from '../../api/pokemonApi';
 import PokemonList from '@/components/ui/PokemonList';
 import SearchBox from '@/components/ui/SearchBox';
-
-
+import { Button } from '@rneui/base';
+import ModalError from '@/components/ui/ModalError';
+import { DetailedPokemon } from '@/utils/interfaces';
 
 const AppContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const pokemonData = useSelector((state: RootState) => state.pokemon.pokemonData);
-  const selectedPokemon = useSelector((state: RootState) => state.pokemon.selectedPokemon);
+  const selectedPokemon: DetailedPokemon | null = useSelector((state: RootState) => state.pokemon.selectedPokemon);
+  const page: number = useSelector((state: RootState) => state.pokemon.page);
+  const hasError: boolean = useSelector((state: RootState) => state.pokemon.hasError);
+  const loading: boolean = useSelector((state: RootState) => state.pokemon.loadingData);
   const [searchQuery, setSearchQuery] = useState('');
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
-    const loadPokemons = async () => {
+    const loadPokemons = async (): Promise<void> => {
       try {
-        // const data = await fetchPokemonsList();
-        const data = await fetchPokemonsDataList() || [];
+        dispatch(setLoadingData(true))
+        const data = await fetchPokemonsDataList(page) || [];
         dispatch(setPokemonData(data));
+        dispatch(setLoadingData(false));
       } catch (error) {
-        console.error(error);
+        dispatch(setHasError(true))
+        console.log('error error ', error);
       }
     };
 
     loadPokemons();
-  }, [dispatch]);
+  }, [dispatch, page]);
 
-  const filteredPokemon = pokemonData.filter((pokemon: any) =>
+  const filteredPokemon: DetailedPokemon[] = pokemonData.filter((pokemon: DetailedPokemon) =>
     pokemon?.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const nextPage = (): void => {
+    dispatch(incrementPage());
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { padding: width < 375 ? 10 : 20 }]}>
       <ScrollView>
         <SearchBox searchText={searchQuery} setSearchText={setSearchQuery} />
-        <PokemonList
-          pokemonData={filteredPokemon}
-          selectedPokemon={selectedPokemon}
-          setSelectedPokemon={(name: string) => {
-            const selected = pokemonData.find(pokemon => pokemon?.name === name);
-            dispatch(setSelectedPokemon(selected));
-          }}
-        />
-                {selectedPokemon && (
+        {loading && (
+          <ActivityIndicator size="large" />
+        )}
+        {!loading && (
           <View>
-            <Text>Selected Pokémon:</Text>
-            <Text>Name: {selectedPokemon?.name}</Text>
-            <Text>Height: {selectedPokemon.height}</Text>
-            <Text>Weight: {selectedPokemon.weight}</Text>
-            {/* Añade más detalles según necesites */}
+            <PokemonList
+              pokemonData={filteredPokemon}
+              selectedPokemon={selectedPokemon}
+              setSelectedPokemon={(name: string) => {
+                const selected = pokemonData.find(pokemon => pokemon?.name === name);
+                dispatch(setSelectedPokemon(selected));
+              }}
+            />
+            {filteredPokemon.length === 20 && (
+              <View style={styles.paginationButtons}>
+                <Button title='Next Page' onPress={nextPage} />
+              </View>
+            )}
+          </View>
+
+        )}
+        {hasError && (
+          <View>
+            <Text>there was an error {hasError}</Text>
+            <ModalError />
           </View>
         )}
       </ScrollView>
@@ -70,7 +91,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
     backgroundColor: '#fff',
   },
   title: {
@@ -78,11 +98,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  item: {
-    backgroundColor: '#f5f5f5',
-    padding: 10,
-    marginVertical: 8,
-    borderRadius: 8,
+  paginationButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
 });
 

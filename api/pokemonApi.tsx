@@ -1,8 +1,22 @@
+import {
+  DetailedPokemon,
+  Pokemon,
+  PokemonsApiResult,
+  PokemonsDataApiResult,
+} from '@/utils/interfaces';
 import apiClient from './apiClient';
+const calculateNextElements = (pag: number) => {
+  return pag * 20;
+};
 
-export const fetchPokemonsList = async (limit: number = 20) => {
+export const fetchPokemonsList = async (
+  limit: number = 20,
+  page: number = 0,
+): Promise<Pokemon[]> => {
   try {
-    const response = await apiClient.get(`?limit=${limit}`);
+    const response: PokemonsApiResult = await apiClient.get(
+      `?limit=${limit}&offset=${calculateNextElements(page)}`,
+    );
     return response.data.results;
   } catch (error) {
     console.error('Error fetching Pokémon list:', error);
@@ -10,11 +24,11 @@ export const fetchPokemonsList = async (limit: number = 20) => {
   }
 };
 
-export const fetchPokemonData = async (pokemonId: string) => {
+export const fetchPokemonData = async (
+  pokemonId: string,
+): Promise<DetailedPokemon> => {
   try {
-    const response = await apiClient.get(`${pokemonId}`);
-    // console.log('pokemonId: ', pokemonId);
-    // console.log('data: ', response);
+    const response: PokemonsDataApiResult = await apiClient.get(`${pokemonId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching Pokémon list:', error);
@@ -22,16 +36,21 @@ export const fetchPokemonData = async (pokemonId: string) => {
   }
 };
 
-export const fetchPokemonsDataList = async () => {
+export const fetchPokemonsDataList = async (
+  page: number,
+): Promise<DetailedPokemon[]> => {
   try {
-    const initialData = await fetchPokemonsList();
-    const detailedDataPromises = initialData.map((pokemon: any)=> fetchPokemonData(pokemon.url));
-    const detailedDataResponse = await Promise.all(detailedDataPromises);
+    const initialData: Pokemon[] = await fetchPokemonsList(20, page);
 
-    console.log('ALL DATA: ', detailedDataResponse);
+    const detailedDataPromises: Promise<DetailedPokemon>[] = initialData.map(
+      (pokemon: Pokemon) => fetchPokemonData(pokemon.url),
+    );
+
+    const detailedDataResponse: DetailedPokemon[] =
+      await Promise.all(detailedDataPromises);
     return detailedDataResponse || [];
-
-  }catch(error){
+  } catch (error) {
     console.log('Error en la Data list: ', error);
+    throw error;
   }
-}
+};

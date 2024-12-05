@@ -1,13 +1,20 @@
+import { DetailedPokemon } from '@/utils/interfaces';
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface PokemonState {
-  pokemonData: any[];
-  selectedPokemon: any | null;
+  pokemonData: DetailedPokemon[];
+  selectedPokemon: DetailedPokemon | null;
+  page: number;
+  loadingData: boolean;
+  hasError: boolean;
 }
 
 const initialState: PokemonState = {
   pokemonData: [],
   selectedPokemon: null,
+  page: 0,
+  loadingData: false,
+  hasError: false,
 };
 
 const pokemonSlice = createSlice({
@@ -20,10 +27,25 @@ const pokemonSlice = createSlice({
     setSelectedPokemon(state, action: PayloadAction<any | null>) {
       state.selectedPokemon = action.payload;
     },
+    incrementPage(state) {
+      state.page += 1;
+    },
+    setLoadingData(state, action: PayloadAction<boolean>) {
+      state.loadingData = action.payload;
+    },
+    setHasError(state, action: PayloadAction<boolean>) {
+      state.hasError = action.payload;
+    },
   },
 });
 
-export const { setPokemonData, setSelectedPokemon } = pokemonSlice.actions;
+export const {
+  setPokemonData,
+  setSelectedPokemon,
+  incrementPage,
+  setLoadingData,
+  setHasError,
+} = pokemonSlice.actions;
 
 const store = configureStore({
   reducer: {
