@@ -1,74 +1,89 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import store, { setPokemonData, AppDispatch, RootState, setSelectedPokemon } from '../../store';
+import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import { fetchPokemonsDataList } from '../../api/pokemonApi';
+import PokemonList from '@/components/ui/PokemonList';
+import SearchBox from '@/components/ui/SearchBox';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+const AppContent: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const pokemonData = useSelector((state: RootState) => state.pokemon.pokemonData);
+  const selectedPokemon = useSelector((state: RootState) => state.pokemon.selectedPokemon);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const loadPokemons = async () => {
+      try {
+        // const data = await fetchPokemonsList();
+        const data = await fetchPokemonsDataList() || [];
+        dispatch(setPokemonData(data));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadPokemons();
+  }, [dispatch]);
+
+  const filteredPokemon = pokemonData.filter((pokemon: any) =>
+    pokemon?.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-}
+
+  return (
+    <View style={styles.container}>
+      <ScrollView>
+        <SearchBox searchText={searchQuery} setSearchText={setSearchQuery} />
+        <PokemonList
+          pokemonData={filteredPokemon}
+          selectedPokemon={selectedPokemon}
+          setSelectedPokemon={(name: string) => {
+            const selected = pokemonData.find(pokemon => pokemon?.name === name);
+            dispatch(setSelectedPokemon(selected));
+          }}
+        />
+                {selectedPokemon && (
+          <View>
+            <Text>Selected Pokémon:</Text>
+            <Text>Name: {selectedPokemon?.name}</Text>
+            <Text>Height: {selectedPokemon.height}</Text>
+            <Text>Weight: {selectedPokemon.weight}</Text>
+            {/* Añade más detalles según necesites */}
+          </View>
+        )}
+      </ScrollView>
+    </View>
+  );
+};
+
+const App: React.FC = () => (
+  <Provider store={store}>
+    <AppContent />
+  </Provider>
+);
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    marginTop: 70,
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    padding: 16,
+    backgroundColor: '#fff',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  item: {
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    marginVertical: 8,
+    borderRadius: 8,
   },
 });
+
+export default App;
