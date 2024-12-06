@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   FlatList,
-  Image,
   Pressable,
-  Modal,
   StyleSheet,
-  Button,
   useWindowDimensions,
 } from 'react-native';
+import { Text, Modal, Button, Headline, Portal, Avatar } from 'react-native-paper';
 import PokeCard from './PokeCard';
 import { DetailedPokemon } from '@/utils/interfaces';
 
@@ -25,7 +22,8 @@ const PokemonList: React.FC<PokemonListProps> = ({
   selectedPokemon,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions(); 
+  const isLandscape = width > height;
 
   const handlePress = (pokemonName: string): void => {
     setSelectedPokemon(pokemonName);
@@ -37,44 +35,41 @@ const PokemonList: React.FC<PokemonListProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, { fontSize: width < 375 ? 18 : 24 }]}>
+    <View style={[styles.container, { padding: isLandscape ? 10 : 20 }]}>
+      <Headline children={undefined} style={[styles.title, { fontSize: isLandscape ? 20 : 24 }]}>
         Pokemon List
-      </Text>
+      </Headline>
       <FlatList
         data={pokemonData}
         keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
           <Pressable
-            style={[styles.item, { padding: width < 375 ? 8 : 16 }]}
+            style={[styles.item, { padding: isLandscape ? 4 : 8 }]}
             onPress={() => handlePress(item.name)}
           >
-            <Text
-              style={[styles.itemText, { fontSize: width < 375 ? 14 : 18 }]}
-            >
+            <Avatar.Image size={isLandscape ? 40 : 50} source={{ uri: item.sprites.front_default }} />
+            <Text children={undefined} style={[styles.itemText, { marginLeft: 10, fontSize: isLandscape ? 14 : 18 }]}>
               {item.name}
             </Text>
-            <Image
-              source={{ uri: item.sprites.front_default }}
-              style={{ width: 30, height: 30 }}
-            />
           </Pressable>
         )}
       />
       {selectedPokemon && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={closeModal}
-        >
-          <View style={styles.modalContainer}>
+        <Portal children={undefined}>
+          <Modal
+            children={undefined}
+            visible={modalVisible}
+            onDismiss={closeModal}
+            contentContainerStyle={styles.modalContainer}
+          >
             <View style={styles.modalContent}>
               <PokeCard pokemonData={selectedPokemon} />
-              <Button title="Close" onPress={closeModal} />
+              <View style={styles.buttonContainer}>
+                <Button onPress={closeModal} children={undefined} mode='contained'>Close</Button>
+              </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
+        </Portal>
       )}
     </View>
   );
@@ -83,17 +78,20 @@ const PokemonList: React.FC<PokemonListProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'flex-start',
+    padding: 20,
   },
   title: {
     textAlign: 'center',
     marginVertical: 10,
   },
   item: {
-    backgroundColor: 'lightgrey',
     marginVertical: 5,
     borderRadius: 5,
+    flexDirection: 'row', alignItems: 'center',
   },
   itemText: {
+    paddingLeft: 20,
     textAlign: 'center',
   },
   modalContainer: {
@@ -101,16 +99,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 20,
   },
   modalContent: {
-    width: '80%',
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 10,
+    flexDirection: 'column',
+    alignItems: 'center',
   },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 10,
+  buttonContainer: {
+    marginTop: 10,
   },
 });
 

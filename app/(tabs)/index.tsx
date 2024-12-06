@@ -8,6 +8,7 @@ import SearchBox from '@/components/ui/SearchBox';
 import { Button } from '@rneui/base';
 import ModalError from '@/components/ui/ModalError';
 import { DetailedPokemon } from '@/utils/interfaces';
+import { DefaultTheme, PaperProvider } from 'react-native-paper';
 
 const AppContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,8 +17,9 @@ const AppContent: React.FC = () => {
   const page: number = useSelector((state: RootState) => state.pokemon.page);
   const hasError: boolean = useSelector((state: RootState) => state.pokemon.hasError);
   const loading: boolean = useSelector((state: RootState) => state.pokemon.loadingData);
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
   const [searchQuery, setSearchQuery] = useState('');
-  const { width } = useWindowDimensions();
 
   useEffect(() => {
     const loadPokemons = async (): Promise<void> => {
@@ -44,7 +46,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <View style={[styles.container, { padding: width < 375 ? 10 : 20 }]}>
+    <View style={[styles.container, { padding: isLandscape ? 10 : 20 }]}>
       <ScrollView>
         <SearchBox searchText={searchQuery} setSearchText={setSearchQuery} />
         {loading && (
@@ -80,8 +82,10 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <Provider store={store}>
-    <AppContent />
+  <Provider store={store} children={undefined}>
+    <PaperProvider theme={DefaultTheme} children={undefined}>
+      <AppContent />
+    </PaperProvider>
   </Provider>
 );
 
@@ -100,7 +104,7 @@ const styles = StyleSheet.create({
   },
   paginationButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginTop: 10,
   },
 });

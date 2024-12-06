@@ -1,43 +1,39 @@
-import { View, StyleSheet, useWindowDimensions } from 'react-native';
-import { Text, Card } from '@rneui/themed';
+import { View, StyleSheet, Text } from 'react-native';
 import { DetailedPokemon } from '@/utils/interfaces';
+import { Card, Paragraph } from 'react-native-paper';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 interface PokeCardData {
   pokemonData: DetailedPokemon;
 }
 
 const PokeCard: React.FC<PokeCardData> = ({ pokemonData }) => {
-  const { width } = useWindowDimensions();
 
   return (
-    <View style={[styles.container, { padding: width < 375 ? 10 : 20 }]}>
-      <Card>
-        <Card.Title style={[styles.title, { fontSize: width < 375 ? 18 : 24 }]}>
-          {pokemonData.name}
-        </Card.Title>
-        <Card.Divider />
-        <Card.Image
-          style={[
-            styles.image,
-            { width: width < 375 ? 100 : 150, height: width < 375 ? 100 : 150 },
-          ]}
-          source={{
-            uri: pokemonData.sprites.front_default,
-          }}
+    <View style={styles.container}>
+      <Card style={styles.card} children={undefined}>
+        <Card.Title
+          title={pokemonData.name}
+          titleStyle={[styles.title, { fontSize: wp('5%') }]}
         />
-        <Card.Divider />
-        <Card.FeaturedSubtitle style={styles.subtitle}>
-          <Text style={styles.labelText}>{'Weight: '}</Text>
-          <Text>{pokemonData.weight}</Text>
-        </Card.FeaturedSubtitle>
-        <Card.FeaturedSubtitle style={styles.subtitle}>
-          <Text style={styles.labelText}>{'Height: '}</Text>
-          <Text>{pokemonData.height}</Text>
-        </Card.FeaturedSubtitle>
-        <Card.FeaturedSubtitle style={styles.subtitle}>
-          <Text style={styles.labelText}>{'Type: '}</Text>
-          <Text>{pokemonData.types[0].type.name}</Text>
-        </Card.FeaturedSubtitle>
+        <Card.Cover
+          source={{ uri: pokemonData.sprites.front_default }}
+          style={[styles.image, { width: wp('50%'), height: hp('20%') }]}
+        />
+        <Card.Content children={undefined}>
+          <Paragraph children={undefined}>
+            <Text style={styles.labelText}>{'Weight: '}</Text>
+            <Text>{pokemonData.weight}</Text>
+          </Paragraph>
+          <Paragraph children={undefined}>
+            <Text style={styles.labelText}>{'Height: '}</Text>
+            <Text>{pokemonData.height}</Text>
+          </Paragraph>
+          <Paragraph children={undefined}>
+            <Text style={styles.labelText}>{'Type: '}</Text>
+            <Text>{pokemonData.types[0].type.name}</Text>
+          </Paragraph>
+        </Card.Content>
       </Card>
     </View>
   );
@@ -50,18 +46,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: wp('5%'),
+  },
+  card: {
+    top: hp('2%'),
+    width: wp('80%'),
   },
   title: {
-    fontSize: 24,
     textAlign: 'center',
   },
   image: {
-    padding: 0,
-  },
-  subtitle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 5,
+    alignSelf: 'center',
   },
   labelText: {
     fontWeight: 'bold',

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TextInput, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
+import { TextInput } from 'react-native-paper';
 
 interface SearchBoxText {
   searchText: string;
@@ -12,11 +13,11 @@ const SearchBox: React.FC<SearchBoxText> = ({ searchText, setSearchText }) => {
   return (
     <View style={styles.container}>
       <TextInput
-        style={[styles.input, { fontSize: width < 375 ? 14 : 18 }]}
-        onChangeText={setSearchText}
+        mode='outlined'
+        label='Search Pokemon'
         value={searchText}
-        placeholder="search for a pokemon"
-        keyboardType="default"
+        onChangeText={setSearchText}
+        style={[styles.input, { fontSize: width < 375 ? 14 : 18 }]}
       />
     </View>
   );
@@ -25,14 +26,10 @@ const SearchBox: React.FC<SearchBoxText> = ({ searchText, setSearchText }) => {
 const styles = StyleSheet.create({
   container: {
     margin: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
   },
   input: {
     height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
+    paddingHorizontal: 10,
   },
 });
 
