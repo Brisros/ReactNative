@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import {
-  View,
+  View, StyleSheet,
+  useWindowDimensions,
   FlatList,
   Pressable,
-  StyleSheet,
-  useWindowDimensions,
 } from 'react-native';
 import { Text, Modal, Button, Headline, Portal, Avatar } from 'react-native-paper';
 import PokeCard from './PokeCard';
@@ -22,9 +21,8 @@ const PokemonList: React.FC<PokemonListProps> = ({
   selectedPokemon,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const { width, height } = useWindowDimensions(); 
+  const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
-
   const handlePress = (pokemonName: string): void => {
     setSelectedPokemon(pokemonName);
     setModalVisible(true);
@@ -75,6 +73,8 @@ const PokemonList: React.FC<PokemonListProps> = ({
   );
 };
 
+export default PokemonList;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -112,5 +112,3 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 });
-
-export default PokemonList;
