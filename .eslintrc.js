@@ -10,6 +10,7 @@ module.exports = {
       'plugin:@typescript-eslint/recommended',
       'plugin:prettier/recommended',
       'plugin:react-native/all',
+      'plugin:testing-library/react',
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {

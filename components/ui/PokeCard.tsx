@@ -13,26 +13,27 @@ const PokeCard: React.FC<PokeCardData> = ({ pokemonData }) => {
   const isLandscape = width > height;
 
   return (
-    <View style={isLandscape ? styles.containerLandscape : styles.containerPortrait}>
-      <Card style={styles.card}>
+    <View testID="cardContainer" style={isLandscape ? styles.containerLandscape : styles.containerPortrait}>
+      <Card testID="card" style={styles.card}>
         <Card.Title
           title={pokemonData.name}
           titleStyle={styles.title}
         />
         <Card.Cover
+          testID="image"
           source={{ uri: pokemonData.sprites.front_default }}
           style={styles.image}
         />
         <Card.Content>
-          <View style={styles.textRow}>
+          <View testID="weightContainer" style={styles.textRow}>
             <Text style={styles.labelText}>Weight: </Text>
             <Text>{pokemonData.weight}</Text>
           </View>
-          <View style={styles.textRow}>
+          <View testID="weightContainer" style={styles.textRow}>
             <Text style={styles.labelText}>Height: </Text>
             <Text>{pokemonData.height}</Text>
           </View>
-          <View style={styles.textRow}>
+          <View testID="weightContainer" style={styles.textRow}>
             <Text style={styles.labelText}>Type: </Text>
             <Text>{pokemonData.types[0].type.name}</Text>
           </View>
