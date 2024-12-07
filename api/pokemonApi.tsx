@@ -41,6 +41,7 @@ export const fetchPokemonsDataList = async (
 ): Promise<DetailedPokemon[]> => {
   try {
     const initialData: Pokemon[] = await fetchPokemonsList(20, page);
+    console.log('Chito!!! ', initialData)
 
     const detailedDataPromises: Promise<DetailedPokemon>[] = initialData.map(
       (pokemon: Pokemon) => fetchPokemonData(pokemon.url),

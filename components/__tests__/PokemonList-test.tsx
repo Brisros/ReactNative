@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import PokemonList from '../ui/PokemonList';
 import { DetailedPokemon } from '@/utils/interfaces';
 import { PaperProvider, Provider } from 'react-native-paper';
@@ -33,7 +33,6 @@ describe('PokemonList Component', () => {
   });
 
   it('opens modal with selected Pokemon details', async () => {
-
     const { getByText } = render(
       <PaperProvider>
         <PokemonList
@@ -44,19 +43,22 @@ describe('PokemonList Component', () => {
       </PaperProvider>
     );
 
-    fireEvent.press(getByText('Pikachu'));
+    await act(async () => {
+      fireEvent.press(getByText('Pikachu'));
+    });
 
     await waitFor(() => {
       expect(mockSetSelectedPokemon).toHaveBeenCalledWith('Pikachu');
     });
-
-    await waitFor(() => {
-      expect(getByText('Weight:')).toBeTruthy();
-      expect(getByText('60')).toBeTruthy();
-      expect(getByText('Height:')).toBeTruthy();
-      expect(getByText('4')).toBeTruthy();
-      expect(getByText('Type:')).toBeTruthy();
-      expect(getByText('Electric')).toBeTruthy();
+    await act(async () => {
+      await act(async () => {
+        expect(getByText('Weight:')).toBeTruthy();
+        expect(getByText('60')).toBeTruthy();
+        expect(getByText('Height:')).toBeTruthy();
+        expect(getByText('4')).toBeTruthy();
+        expect(getByText('Type:')).toBeTruthy();
+        expect(getByText('Electric')).toBeTruthy();
+      });
     });
   });
 
@@ -71,10 +73,15 @@ describe('PokemonList Component', () => {
         />
       </PaperProvider>
     );
-    fireEvent.press(getByText('Pikachu'));
-    await waitFor(() => {
-      expect(mockSetSelectedPokemon).toHaveBeenCalledWith('Pikachu');
+    await act(async () => {
+      fireEvent.press(getByText('Pikachu'));
     });
-    expect(getByText('Close')).toBeTruthy();
+    await act(async () => {
+      await waitFor(() => {
+        expect(mockSetSelectedPokemon).toHaveBeenCalledWith('Pikachu');
+        expect(getByText('Close')).toBeTruthy();
+      });
+    });
   });
+
 });

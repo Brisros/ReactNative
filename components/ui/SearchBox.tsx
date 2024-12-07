@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, useWindowDimensions } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { Searchbar } from 'react-native-paper';
 
 interface SearchBoxText {
   searchText: string;
@@ -12,9 +12,8 @@ const SearchBox: React.FC<SearchBoxText> = ({ searchText, setSearchText }) => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        mode='outlined'
-        label='Search Pokemon'
+      <Searchbar
+        placeholder='Search Pokemon'
         value={searchText}
         onChangeText={setSearchText}
         style={[styles.input, { fontSize: width < 375 ? 14 : 18 }]}

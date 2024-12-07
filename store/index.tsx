@@ -1,5 +1,6 @@
+import { fetchPokemonsDataList } from '@/api/pokemonApi';
 import { DetailedPokemon } from '@/utils/interfaces';
-import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { configureStore, createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface PokemonState {
   pokemonData: DetailedPokemon[];
@@ -16,6 +17,17 @@ const initialState: PokemonState = {
   loadingData: false,
   hasError: false,
 };
+
+export const fetchPokemons = createAsyncThunk(
+  'pokemon/fetchPomenons',
+  async (page: number, { rejectWithValue }) => {
+    try {
+      const response = await fetchPokemonsDataList(page);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
 
 const pokemonSlice = createSlice({
   name: 'pokemon',
@@ -37,6 +49,21 @@ const pokemonSlice = createSlice({
       state.hasError = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPokemons.pending, (state) => {
+        state.loadingData = true;
+        state.hasError = false;
+      })
+      .addCase(fetchPokemons.fulfilled, (state, action) => {
+        state.loadingData = false;
+        state.pokemonData = action.payload;
+      })
+      .addCase(fetchPokemons.rejected, (state, action) => {
+        state.loadingData = false;
+        state.hasError = true;
+      })
+  }
 });
 
 export const {
