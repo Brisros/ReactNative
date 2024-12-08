@@ -9,6 +9,7 @@ import ModalError from '@/components/ui/ModalError';
 import { DetailedPokemon } from '@/utils/interfaces';
 import { saveSelectedPokemon } from '../api/asyncStorage';
 import FloatingButton from './ui/FloatingButton';
+import { pokeFilter } from '@/utils/utils';
 
 const PokeApp: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -25,9 +26,7 @@ const PokeApp: React.FC = () => {
         dispatch(fetchPokemons(page));
     }, [dispatch, page]);
 
-    const filteredPokemon: DetailedPokemon[] = pokemonData.filter((pokemon: DetailedPokemon) =>
-        pokemon?.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredPokemon: DetailedPokemon[] = pokeFilter(pokemonData, searchQuery.toLowerCase());
 
     const setSelectedPokemons = async (name: string): Promise<void> => {
         const selected = pokemonData.find(pokemon => pokemon?.name === name);

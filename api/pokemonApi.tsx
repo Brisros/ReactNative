@@ -19,7 +19,7 @@ export const fetchPokemonsList = async (
     );
     return response.data.results;
   } catch (error) {
-    console.error('Error fetching Pokémon list:', error);
+    console.error('Error fetching Pokemon list:', error);
     throw error;
   }
 };
@@ -31,7 +31,7 @@ export const fetchPokemonData = async (
     const response: PokemonsDataApiResult = await apiClient.get(`${pokemonId}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching Pokémon list:', error);
+    console.error('Error fetching Pokemon list:', error);
     throw error;
   }
 };
