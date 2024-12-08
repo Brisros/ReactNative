@@ -29,6 +29,17 @@ export const fetchPokemons = createAsyncThunk(
     }
   });
 
+  export const failedAPI = createAsyncThunk(
+  'pokemon/failedAPI',
+  async (page: number, { rejectWithValue }) => {
+    try {
+      const response = rejectWithValue('Fake API error');
+      return response;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
 const pokemonSlice = createSlice({
   name: 'pokemon',
   initialState,
@@ -60,6 +71,10 @@ const pokemonSlice = createSlice({
         state.pokemonData = action.payload;
       })
       .addCase(fetchPokemons.rejected, (state, action) => {
+        state.loadingData = false;
+        state.hasError = true;
+      })
+      .addCase(failedAPI.rejected, (state, action) => {
         state.loadingData = false;
         state.hasError = true;
       })

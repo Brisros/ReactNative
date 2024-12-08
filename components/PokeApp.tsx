@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPokemons, AppDispatch, RootState, setSelectedPokemon, incrementPage, setLoadingData, setHasError } from '../store';
-import { View, ScrollView, Text, ActivityIndicator, useWindowDimensions, StyleSheet } from 'react-native';
+import { fetchPokemons, AppDispatch, RootState, setSelectedPokemon, incrementPage, failedAPI } from '../store';
+import { View, ActivityIndicator, useWindowDimensions, StyleSheet, ScrollView, Pressable } from 'react-native';
 import PokemonList from '@/components/ui/PokemonList';
 import SearchBox from '@/components/ui/SearchBox';
-import { Button } from '@rneui/base';
 import ModalError from '@/components/ui/ModalError';
 import { DetailedPokemon } from '@/utils/interfaces';
 import { saveSelectedPokemon } from '../api/asyncStorage';
 import FloatingButton from './ui/FloatingButton';
 import { pokeFilter } from '@/utils/utils';
+import { Appbar, Button, Text } from 'react-native-paper';
 
 const PokeApp: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -21,6 +21,7 @@ const PokeApp: React.FC = () => {
     const { width, height } = useWindowDimensions();
     const isLandscape = width > height;
     const [searchQuery, setSearchQuery] = useState('');
+    const [viewSearchBar, setViewSearchBar] = useState(false);
 
     useEffect(() => {
         dispatch(fetchPokemons(page));
@@ -42,15 +43,28 @@ const PokeApp: React.FC = () => {
         dispatch(fetchPokemons(0));
     }
 
+    const fakeFailedAPI = (): void => {
+        dispatch(failedAPI(0));
+    }
+
     return (
         <View style={[styles.container, { padding: isLandscape ? 10 : 20 }]}>
-            <ScrollView>
-                <SearchBox searchText={searchQuery} setSearchText={setSearchQuery} />
-                {loading && (
-                    <ActivityIndicator size="large" />
-                )}
-                {!loading && (
-                    <View>
+            <Appbar.Header>
+                <Appbar.Content title="Poke App" />
+                <Appbar.Action icon="magnify" onPress={() => setViewSearchBar(!viewSearchBar)} />
+            </Appbar.Header>
+            {viewSearchBar && (
+                <View style={styles.header}>
+                    <SearchBox searchText={searchQuery} setSearchText={setSearchQuery} />
+                </View>
+            )}
+            <View style={styles.content}>
+                {loading ? (
+                    <View style={styles.content}>
+                        <ActivityIndicator size="large" />
+                    </View>
+                ) : (
+                    <View style={styles.content}>
                         <PokemonList
                             pokemonData={filteredPokemon}
                             selectedPokemon={selectedPokemon}
@@ -58,44 +72,47 @@ const PokeApp: React.FC = () => {
                         />
                         {filteredPokemon.length === 20 && (
                             <View style={styles.paginationButtons}>
-                                <Button title='Next Page' onPress={nextPage} />
+                                <Button mode="outlined" onPress={nextPage}>Next Page</Button>
                             </View>
                         )}
                     </View>
                 )}
-                {hasError && (
-                    <View>
-                        <Text>there was an error {hasError}</Text>
-                        <ModalError />
-                    </View>
-                )}
-            </ScrollView>
-            <View style={styles.floatingButton}>
-                <FloatingButton onClicked={reloadApi} />
+            </View>
+            {hasError && (
+                <View>
+                    <ModalError />
+                </View>
+            )}
+            <View>
+                <FloatingButton onClicked={reloadApi} position='right' type='reload' />
+                <FloatingButton onClicked={fakeFailedAPI} position='left' type='fail' />
             </View>
         </View>
     );
+
 };
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 70,
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: '#fff',
     },
-    title: {
+    header: {
+        flex: 0.1,
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 16,
+        marginBottom: 20,
+        alignSelf: 'center',
+        pointerEvents: 'none'
     },
     paginationButtons: {
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 10,
     },
-    floatingButton: { position: 'absolute', right: 20, bottom: 10, },
+    content: {
+        flex: 1
+    },
 });
 
 export default PokeApp;

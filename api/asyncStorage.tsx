@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const POKEMON_KEY = 'SELECTED_POKEMON';
 
 export const saveSelectedPokemon = async (pokemon: DetailedPokemon) => {
-  console.log('This is the last reviewed pokemon: ', pokemon);
   try {
     const jsonValue = JSON.stringify(pokemon);
     await AsyncStorage.setItem(POKEMON_KEY, jsonValue);

@@ -1,6 +1,6 @@
-import { View, StyleSheet, Modal } from 'react-native';
-import { Button } from '@rneui/themed';
+import { View, StyleSheet } from 'react-native';
 import { useState } from 'react';
+import { Button, Modal, Portal, Title } from 'react-native-paper';
 
 const ModalError: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(true);
@@ -9,19 +9,18 @@ const ModalError: React.FC = () => {
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={closeModal}
-    >
-      <View style={styles.modalContainer}>
+    <Portal>
+      <Modal
+        visible={modalVisible}
+        onDismiss={closeModal}
+        contentContainerStyle={styles.modalContainer}
+      >
         <View style={styles.modalContent}>
-          Opps... Something went wrong
-          <Button title="Close" onPress={closeModal} />
+          <Title>Opps... Something went wrong</Title>
+          <Button onPress={closeModal} mode='outlined'>Close</Button>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+    </Portal>
   );
 };
 

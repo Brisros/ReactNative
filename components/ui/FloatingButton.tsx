@@ -4,9 +4,11 @@ import { AnimatedFAB } from 'react-native-paper';
 
 interface IFloatingButton {
     onClicked: () => void;
+    position: 'left' | 'right';
+    type: 'reload' | 'fail';
 }
 
-const FloatingButton: React.FC<IFloatingButton> = ({ onClicked }) => {
+const FloatingButton: React.FC<IFloatingButton> = ({ onClicked, position, type }) => {
     const [isExtended, setIsExtended] = React.useState(true);
 
     const handlePress = () => {
@@ -20,7 +22,12 @@ const FloatingButton: React.FC<IFloatingButton> = ({ onClicked }) => {
                     icon="reload"
                     label=""
                     extended={isExtended}
-                    style={styles.fab}
+                    style={
+                        [
+                            styles.fab,
+                            position === 'left' ? styles.left : styles.right,
+                            type === 'reload' ? styles.reload : styles.fail
+                        ]}
                     animateFrom={'right'}
                     iconMode={'dynamic'}
                     onPress={handlePress}
@@ -32,19 +39,25 @@ const FloatingButton: React.FC<IFloatingButton> = ({ onClicked }) => {
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: 'flex-end',
-        alignItems: 'flex-end',
-        margin: -10,
-        left:0
+        backgroundColor: 'red'
     },
     fab: {
-        position: 'absolute',
-        right: 0,
         bottom: 0,
-        backgroundColor: '#6200ee',
-        justifyContent: 'center',
-        alignItems: 'center'
+        backgroundColor: 'orange',
     },
+    left:
+    {
+        left: 0,
+    },
+    right: {
+        right: 0
+    },
+    reload: {
+        backgroundColor: 'orange'
+    },
+    fail: {
+        backgroundColor: 'red'
+    }
 });
 
 export default FloatingButton;

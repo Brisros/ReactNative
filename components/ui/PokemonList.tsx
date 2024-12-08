@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import {
   View, StyleSheet,
   useWindowDimensions,
   FlatList,
   Pressable,
 } from 'react-native';
-import { Text, Modal, Button, Headline, Portal, Avatar } from 'react-native-paper';
+import { Text, Modal, Button, Portal, Avatar } from 'react-native-paper';
 import PokeCard from './PokeCard';
 import { DetailedPokemon } from '@/utils/interfaces';
 
@@ -33,10 +33,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   };
 
   return (
-    <View style={[styles.container, { padding: isLandscape ? 10 : 20 }]}>
-      <Headline children={undefined} style={[styles.title, { fontSize: isLandscape ? 20 : 24 }]}>
-        Pokemon List
-      </Headline>
+    <Fragment>
       <FlatList
         data={pokemonData}
         keyExtractor={(item) => item.name}
@@ -69,7 +66,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
           </Modal>
         </Portal>
       )}
-    </View>
+    </Fragment>
   );
 };
 
@@ -110,5 +107,5 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-  },
+  }
 });
