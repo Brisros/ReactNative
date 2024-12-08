@@ -54,7 +54,7 @@ const PokeApp: React.FC = () => {
                 <Appbar.Action icon="magnify" onPress={() => setViewSearchBar(!viewSearchBar)} />
             </Appbar.Header>
             {viewSearchBar && (
-                <View style={styles.header}>
+                <View style={styles.searchContainer}>
                     <SearchBox searchText={searchQuery} setSearchText={setSearchQuery} />
                 </View>
             )}
@@ -103,7 +103,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
         alignSelf: 'center',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        backgroundColor: 'red'
+    },
+    searchContainer: {
+        padding: 10
     },
     paginationButtons: {
         flexDirection: 'row',

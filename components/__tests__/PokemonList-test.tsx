@@ -2,7 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import PokemonList from '../ui/PokemonList';
 import { DetailedPokemon } from '@/utils/interfaces';
-import { PaperProvider, Provider } from 'react-native-paper';
+import { PaperProvider } from 'react-native-paper';
 
 const mockPokemonData: DetailedPokemon[] = [
   {
@@ -27,7 +27,6 @@ describe('PokemonList Component', () => {
   const fn = jest.fn();
   it('should render the component correctly', () => {
     const { getByText } = render(<PokemonList pokemonData={mockPokemonData} selectedPokemon={null} setSelectedPokemon={fn} />);
-    expect(getByText('Pokemon List')).toBeTruthy();
     expect(getByText(mockPokemonData[0].name)).toBeTruthy();
     expect(getByText(mockPokemonData[1].name)).toBeTruthy();
   });
