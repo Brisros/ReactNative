@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import PokeCard from '../ui/PokeCard';
 import { DetailedPokemon } from '@/utils/interfaces';
-import { useWindowDimensions } from 'react-native';
 
 jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
   __esModule: true,

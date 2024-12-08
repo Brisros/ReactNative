@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import SearchBox from '../ui/SearchBox'; // Asegúrate de que esta ruta sea correcta
+import SearchBox from '../ui/SearchBox';
 import { PaperProvider } from 'react-native-paper';
 
 describe('SearchBox Component', () => {

@@ -25,26 +25,75 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+3. Press 'w' to start web
 
-To learn more about developing your project with Expo, look at the following resources:
+## Unit test
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+To run the unit test, run:
 
-## Join the community
+```bash
+npm run test
+```
 
-Join our community of developers creating universal apps.
+## Approach
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Se utilizo el framework expo para agilizar el desarrollo, ademas se hizo uso de la plantilla que viene en el starter.
+
+- API
+Se creo el archivo api\apiClient.tsx como base para apis, en este se pueden ir agregando mas endpoints
+
+se creo el archivo api\pokemonApi.tsx con axios para hacer el llamado a las api, La api principal regresaba solo el nombre y una url
+
+La funcion fetchPokemonsList se configura para obtener los primeros 20 elementos
+se creo una funcion calculateNextElements para calcular la pagina, sin embargo la misma api tiene las propiedades prev y next que pueden utilizarse para la paginacion
+
+La funcion fetchPokemonData se configura para obtener la informacion con la url obtenida en la funcion anterior.
+
+La funcion fetchPokemonsDataList hace uso de las 2 funciones anteriores, resuelve las promesas y regresa la informacion detallada de los pokemon
+
+- UI Generalidades
+Se utilizo 'react-native-paper' para reutilizar componentes.
+Para el boton flotante se utilizo AnimatedFAB del punto anterior
+Se utilizo 'StyleSheet.create' para dar estilo a algunos elementos
+Se siguio el aproach de componentes tipo contenedor y presentacionales para separar logica, mediante el uso de inputs y outpus para enviar y recibir datos
+
+
+- Componentes
+El archivo components\ui\PokemonList.tsx utilizo una FlatList y elementos Pressable para mostrar el listado de pokemons, este archivo recibe un arreglo de detalles de pokemons para mostrarlos. Aqui mismo se utiliza un Modal para mostrar la informacion del pokemon seleccionado, esta data viene como un input, el modal muestra una PokeCard
+
+Se creo components\ui\PokeCard.tsx para mostrar una tarjeta del pokemon con sus propiedades e imagen.
+
+El archivo components\PokeApp.tsx es un componente tipo contenedor, es quien maneja la informacion y se la pasa en forma de inputs al hijo PokemonList.
+Aqui se hace uso de las funciones 'dispatch' lanzar actualizaciones al estado, las cuales hacen peticiones a la api. 
+La paginacion tambien esta incluida en este archivo, solo se realiza paginacion hacia delante. Se puede mejorar una paginacion hacia atras.
+Cuenta con el componente 'SearchBox', el cual notifica la cadena de busqueda que se usa para filtrar los pokemons que coincidan con el criterio de busqueda.
+En caso de que haya algun error en una llamada de api, aparece un modal que indica que hubo un error.
+El boton flotante lanza una accion fetchPokemons que vuelve a ejecutar el llamado a la api inicialmente. Se puede agregar mas logica para que el boton de recargar desaparezca al estar buscando.
+
+- State Management
+Se implemento react redux, se creo una carpeta store\index.tsx donde se configuro la estructura, store, actions, reducers.
+En los reducers se manejan los estados que reaccionan si las api fallan (mostrando un modal), cuando la informacion esta cargando (spinner) y es exitosa
+
+
+- Utils
+En esta carpeta se crearon 2 archivos:
+utils: se extrajo una funcion filtra los pokemon por nombre y regresa las coincidencias. Aqui mismo se pueden implementar otras funciones que pueden ser utilizadas en otros componentes.
+interfaces: Con el objetivo de utilizar estas definiciones en el typado sin generar referencias circulares.
+
+- Pruebas Unitarias
+De acuerdo a la documentacion de expo, se requiere una carpeta llamada '__test__'. Cuando se corren las pruebas, se ejecutan los tests de los archivos .test.tsx dentro de la misma.
+En el archivo components\__tests__\PokeCard-test.tsx se utilizo render para validar que la informacion se rendereara correctamente, ademas se utilizaron los getByText para buscar que la informacion se popule de acuerdo al mock proporcionado.
+En el archivo utils\__tests__\utils-test.tsx se extrajo la funcion que es utilizada para filtrar los pokemons desde el buscador, facilitando de esa manera la prueba del mismo. Se pudiera crear otra prueba extensiva donde se invlucren varios componentes y validar que se rendereen correctamente.
+En el archivo components\__tests__\PokemonList-test.tsx se valida que los pokemons se muestren correctamente, se proporciono un mock de 2 elementos y posteriormente se valido que coincidieran con el mock.
+Tambien se crearon 2 test para validar que se abriera el modal y se cerrara, esto con los eventos 'fireEvent.press'
+El archivo api\__tests__\pokemonApi-test.tsx maneja los casos donde se emula que la api responde y falla.
+
+- AsyncStorage
+Se creo el archivo api\asyncStorage.tsx para guardar informacion del pokemon seleccionado, este se puede visualizar en la tab de Current Pokemon, inicialmente si no se selecciona alguno, se muestra un icono y un mensaje sobre ello.
+Cuando hay un pokemon guardado, se muestra en la tab mencionada.
+
+## Mas informacion
+
+- Se configuro Jest, ESLint y Prettier, ver package.json para mas detalle
