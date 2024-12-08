@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import React, { useState, useCallback } from 'react';
 
 import PokeCard from '@/components/ui/PokeCard';
-import { Icon, MD3Colors, Title } from 'react-native-paper';
+import { Appbar, Icon, MD3Colors, Title } from 'react-native-paper';
 import { loadSelectedPokemon } from '@/api/asyncStorage';
 import { DetailedPokemon } from '@/utils/interfaces';
 import { useFocusEffect } from '@react-navigation/native';
@@ -10,6 +10,8 @@ import { useFocusEffect } from '@react-navigation/native';
 
 export default function TabTwoScreen() {
   const [currentPokemon, setCurrentPokemon] = useState<DetailedPokemon | null>(null);
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
   useFocusEffect(
     useCallback(() => {
       const fetchPokemon = async () => {
@@ -24,35 +26,48 @@ export default function TabTwoScreen() {
   );
 
   return (
-    <View>
-      <Title>Current Pokemon</Title>
-      {currentPokemon && (
-        <PokeCard pokemonData={currentPokemon} />
-      )}
-      {!currentPokemon && (
-        <View>
-
-          <Icon
-            source="alert"
-            color={MD3Colors.error50}
-            size={20}
-          />
-          <Text >No selected pokemon</Text>
-        </View>
-      )}
+    <View style={[styles.container, { padding: isLandscape ? 10 : 20 }]}>
+      <Appbar.Header>
+        <Appbar.Content title="Current Pokemon" />
+      </Appbar.Header>
+      <View style={styles.content}>
+        {currentPokemon ? (
+          <PokeCard pokemonData={currentPokemon} />
+        ) : (
+          <View>
+            <Icon
+              source="alert"
+              color={MD3Colors.error50}
+              size={20}
+            />
+            <Text >No selected pokemon</Text>
+          </View>
+        )}
+      </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center'
   },
-  titleContainer: {
+  header: {
+    flex: 0.1,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    alignSelf: 'center',
+    pointerEvents: 'none'
+  },
+  paginationButtons: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  content: {
+    flex: 1
   },
 });

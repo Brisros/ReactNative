@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import { useState } from 'react';
-import { Button, Modal, Portal, Title } from 'react-native-paper';
+import { Button, Modal, Paragraph, Portal, Text, Title } from 'react-native-paper';
 
 const ModalError: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(true);
@@ -17,6 +17,12 @@ const ModalError: React.FC = () => {
       >
         <View style={styles.modalContent}>
           <Title>Opps... Something went wrong</Title>
+          <Paragraph>
+            You got this Modal because there was an API error
+          </Paragraph>
+          <Paragraph>
+            If you clicked the red button then you simulated an api error
+          </Paragraph>
           <Button onPress={closeModal} mode='outlined'>Close</Button>
         </View>
       </Modal>
